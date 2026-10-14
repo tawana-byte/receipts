@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receipt Book</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2b4fd8">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2330;--mu:#667;--ln:#c9d0e0;--ac:#2b4fd8;--dg:#c62828;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--tx:#eef1f7;--mu:#98a;--ln:#39414f;--ac:#7b97ff;--dg:#ff7a7a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--tx:#eef1f7;--mu:#98a;--ln:#39414f;--ac:#7b97ff;--dg:#ff7a7a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,-apple-system,"Segoe UI",sans-serif;padding:12px}
+.wrap{max-width:560px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px;margin-bottom:14px}
+h1{text-align:center;font-size:22px;margin:4px 0 12px;letter-spacing:.5px}
+h2{font-size:16px;margin:0 0 10px}
+label.f{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+input[type=text],input[type=date],input[type=number]{width:100%;padding:11px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;align-items:center;gap:8px;padding:12px;border:1px solid var(--ln);border-radius:10px;cursor:pointer;font-size:15px}
+.chk input{width:22px;height:22px;accent-color:var(--ac)}
+.row{display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:8px;align-items:center}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:20px;padding-top:10px;border-top:2px solid var(--ln);margin-top:6px}
+canvas{width:100%;height:130px;border:1px dashed var(--ln);border-radius:10px;background:#fff;touch-action:none;display:block}
+button{font:inherit;padding:12px 16px;border-radius:10px;border:0;background:var(--ac);color:#fff;cursor:pointer}
+button.s{background:transparent;color:var(--ac);border:1px solid var(--ac);padding:6px 12px;font-size:14px}
+button.d{background:transparent;color:var(--dg);border:1px solid var(--dg);padding:6px 12px;font-size:14px}
+.btns{display:flex;gap:8px}.btns button{flex:1}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.item:last-child{border:0}.item small{color:var(--mu);display:block}
+#msg{text-align:center;color:var(--ac);min-height:20px;font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;margin:0 6px 6px 0;border:1px solid var(--ln);border-radius:20px;cursor:pointer}.chip b{color:var(--dg);padding:0 2px}
+@media print{body{background:#fff}.noprint{display:none}}
+</style></head><body><div class="wrap">
+<h1 id="title">MARI YEZVIPO</h1>
+
+<div class="card">
+ <div id="rno" style="font-size:13px;color:var(--mu);text-align:right"></div>
+ <label class="f">Musi (Date)</label><input type="date" id="date">
+ 
+ <label class="f">Sarudza (Select)</label>
+ <div class="checks">
+  <label class="chk"><input type="checkbox" name="opt" value="Yagamuchirwa"> Yagamuchirwa</label>
+  <label class="chk"><input type="checkbox" name="opt" value="Yabhadharwa"> Yabhadharwa</label>
+  <label class="chk"><input type="checkbox" name="opt" value="Yachengetwa Mubhokisi Remari"> Yachengetwa Mubhokisi Remari</label>
+  <label class="chk"><input type="checkbox" name="opt" value="Yafanopiwa Munhu"> Yafanopiwa Munhu</label>
+ </div>
+ <label class="f">Zvipo</label>
+ <div class="row"><span>Basa Remunyika Yese</span><input type="number" inputmode="decimal" class="amt" id="a1" placeholder="0.00"></div>
+ <div class="row"><span>Zvinoda Kubhadharwa Neungano</span><input type="number" inputmode="decimal" class="amt" id="a2" placeholder="0.00"></div>
+ <div class="row"><input type="text" id="l3" placeholder="Other"><input type="number" inputmode="decimal" class="amt" id="a3" placeholder="0.00"></div>
+ <div class="row"><input type="text" id="l4" placeholder="Other"><input type="number" inputmode="decimal" class="amt" id="a4" placeholder="0.00"></div>
+ <div class="row"><input type="text" id="l5" placeholder="Other"><input type="number" inputmode="decimal" class="amt" id="a5" placeholder="0.00"></div>
+ <div class="total"><span>MARI YESE</span><span><select id="cur" style="font:inherit;padding:6px;border-radius:8px;border:1px solid var(--ln);background:var(--bg);color:var(--tx)"><option>USD</option><option>ZWG</option></select> <span id="tot">0.00</span></span></div>
+
+ 
+ <label class="f">Ranyorwa na (Written by)</label><input type="text" id="name" class="nm" placeholder="Name of person who signed" style="margin-bottom:8px">
+ <canvas id="s1" width="500" height="160"></canvas>
+ <div style="text-align:right;margin-top:4px"><button class="s noprint" onclick="clr('s1')">Clear</button></div>
+ <label class="f">Zvapupurirwa na (Witnessed by)</label><input type="text" id="name2" class="nm" placeholder="Name of person who signed" style="margin-bottom:8px">
+ <canvas id="s2" width="500" height="160"></canvas>
+ <div style="text-align:right;margin-top:4px"><button class="s noprint" onclick="clr('s2')">Clear</button></div>
+</div>
+
+<div id="msg"></div>
+<div class="btns noprint" style="margin-bottom:14px">
+ <button onclick="save()">Save receipt</button>
+ <button class="s" onclick="newR()">New</button>
+</div>
+
+<div class="card noprint" id="pv" hidden><h2>Saved receipt</h2><img id="pvimg" alt="Receipt" style="width:100%;border-radius:8px;display:block"><small style="color:var(--mu)">Press and hold the picture to save or share it.</small>
+<button onclick="shareImg()" style="margin-top:8px;width:100%">Share / Save image</button></div>
+
+<div class="card noprint"><h2>Saved receipts</h2>
+<div class="btns" style="margin-bottom:8px"><button class="s" onclick="backup()">Backup</button><button class="s" onclick="$('rf').click()">Restore</button></div><input type="file" id="rf" accept=".json,application/json" hidden onchange="restore(this)"><div id="list"></div></div>
+</div>
+<script>
+const KEY='receipts_v1';let cur=null;
+const $=id=>document.getElementById(id);
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function store(a){try{localStorage.setItem(KEY,JSON.stringify(a));return true}catch(e){return false}}
+function say(t){$('msg').textContent=t;setTimeout(()=>$('msg').textContent='',2500)}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function total(){let t=0;document.querySelectorAll('.amt').forEach(i=>t+=parseFloat(i.value)||0);$('tot').textContent=t.toFixed(2);return t}
+document.querySelectorAll('.amt').forEach(i=>i.addEventListener('input',total));
+
+// signature pads
+const pads={};
+function pad(id){const c=$(id),x=c.getContext('2d');let d=false,dirty=false;
+ x.lineWidth=3;x.lineCap='round';x.strokeStyle='#111';
+ const p=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+ c.addEventListener('pointerdown',e=>{d=true;dirty=true;c.setPointerCapture(e.pointerId);const[a,b]=p(e);x.beginPath();x.moveTo(a,b);x.lineTo(a+.1,b+.1);x.stroke()});
+ c.addEventListener('pointermove',e=>{if(!d)return;const[a,b]=p(e);x.lineTo(a,b);x.stroke()});
+ ['pointerup','pointercancel'].forEach(n=>c.addEventListener(n,()=>d=false));
+ pads[id]={c,x,has:()=>dirty,set:v=>dirty=v}}
+pad('s1');pad('s2');
+function clr(id){const p=pads[id];p.x.clearRect(0,0,p.c.width,p.c.height);p.set(false)}
+function drawSig(id,url){clr(id);if(!url)return;const im=new Image();im.onload=()=>{pads[id].x.drawImage(im,0,0,pads[id].c.width,pads[id].c.height);pads[id].set(true)};im.src=url}
+
+function newR(){cur=null;$('date').value=today();document.querySelectorAll('input[name=opt]').forEach(c=>c.checked=false);
+ document.querySelectorAll('.wrap input[type=number],.wrap input[type=text]').forEach(i=>i.value='');
+ clr('s1');clr('s2');$('cur').value='USD';total();$('rno').textContent='New receipt'}
+function save(){
+ const a=load();
+ const r={id:cur||Date.now(),date:$('date').value,name:$('name').value.trim(),name2:$('name2').value.trim(),opts:[...document.querySelectorAll('input[name=opt]:checked')].map(c=>c.value),
+  a1:$('a1').value,a2:$('a2').value,l3:$('l3').value,a3:$('a3').value,l4:$('l4').value,a4:$('a4').value,l5:$('l5').value,a5:$('a5').value,
+  total:total().toFixed(2),cur:$('cur').value,s1:pads.s1.has()?$('s1').toDataURL():'',s2:pads.s2.has()?$('s2').toDataURL():''};
+ if(!cur){r.no=(a.reduce((m,x)=>Math.max(m,x.no||0),0))+1}else{r.no=(a.find(x=>x.id===cur)||{}).no}
+ const i=a.findIndex(x=>x.id===r.id);if(i>=0)a[i]=r;else a.unshift(r);
+ if(store(a)){cur=r.id;$('rno').textContent='Receipt #'+r.no;say('Saved ✓');render();showPv(r.id)}else say('Could not save (storage unavailable)')}
+function open_(id){const r=load().find(x=>x.id===id);if(!r)return;cur=id;
+ $('date').value=r.date;$('name').value=r.name||'';$('name2').value=r.name2||'';$('cur').value=r.cur||'USD';document.querySelectorAll('input[name=opt]').forEach(c=>c.checked=r.opts.includes(c.value));
+ ['a1','a2','l3','a3','l4','a4','l5','a5'].forEach(k=>$(k).value=r[k]||'');
+ drawSig('s1',r.s1);drawSig('s2',r.s2);total();$('rno').textContent='Receipt #'+r.no;window.scrollTo({top:0,behavior:'smooth'})}
+function del(id){if(!confirm('Delete this receipt?'))return;store(load().filter(x=>x.id!==id));if(cur===id)newR();render()}
+function render(){const a=load();$('list').innerHTML=a.length?a.map(r=>`<div class="item"><div><b>#${r.no} · ${r.cur||'USD'} ${r.total}</b><small>${esc([r.name,r.name2].filter(Boolean).join(' & '))} ${r.date||''} ${esc(r.opts.join(', '))}</small></div><div class="btns"><button class="s" onclick="showPv(${r.id})">View</button><button class="s" onclick="open_(${r.id})">Edit</button><button class="d" onclick="del(${r.id})">Delete</button></div></div>`).join(''):'<small style="color:var(--mu)">No saved receipts yet.</small>'}
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const NK='names_v1';
+function names(){try{return JSON.parse(localStorage.getItem(NK))||[]}catch(e){return[]}}
+function putNames(a){try{localStorage.setItem(NK,JSON.stringify(a))}catch(e){}}
+function addName(){const v=$('nn').value.trim();if(!v)return;const a=names();if(!a.includes(v)){a.push(v);a.sort();putNames(a)}$('nn').value='';renderNames()}
+function delName(i){const a=names();a.splice(i,1);putNames(a);renderNames()}
+let last='name';document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('nm'))last=e.target.id});
+function pick(i){$(last).value=names()[i]}
+function renderNames(){const a=names();$('chips').innerHTML=a.length?a.map((n,i)=>`<span class="chip" onclick="pick(${i})">${esc(n)} <b onclick="event.stopPropagation();delName(${i})">×</b></span>`).join(''):'<small style="color:var(--mu)">No names yet.</small>'}
+
+const ld=u=>new Promise(res=>{if(!u)return res(null);const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=u});
+async function paper(r){
+ const W=1000,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#c8d2f4');g.addColorStop(1,'#b1bfee');x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.fillStyle='#1a1f3a';x.strokeStyle='#2a3150';x.lineWidth=2;
+ const T=(t,a,b,f,al)=>{x.font=f;x.textAlign=al||'left';x.fillText(t,a,b)};
+ const L=(a,b,e)=>{x.beginPath();x.moveTo(a,b);x.lineTo(e,b);x.stroke()};
+ const B='bold 34px "Times New Roman",serif',N='32px "Times New Roman",serif';
+ const fm=v=>v===''||v==null||isNaN(parseFloat(v))?'':parseFloat(v).toFixed(2);
+ T('MARI YEZVIPO',500,90,'bold 54px "Times New Roman",serif','center');
+ T('Sarudza:',60,170,B);T('Musi:',640,170,B);L(730,178,950);T(r.date||'',740,168,N);
+ const ck=(a,b,t,on)=>{x.strokeRect(a,b-26,28,28);if(on){x.lineWidth=5;x.beginPath();x.moveTo(a+5,b-12);x.lineTo(a+12,b-3);x.lineTo(a+24,b-24);x.stroke();x.lineWidth=2}T(t,a+44,b,N)};
+ const o=r.opts||[];
+ ck(70,240,'Yagamuchirwa',o.includes('Yagamuchirwa'));ck(560,240,'Yabhadharwa',o.includes('Yabhadharwa'));
+ ck(70,300,'Yachengetwa Mubhokisi Remari',o.includes('Yachengetwa Mubhokisi Remari'));ck(560,300,'Yafanopiwa Munhu',o.includes('Yafanopiwa Munhu'));
+  T('Zvipo—Basa Remunyika Yese',80,470,N);L(740,478,950);T(fm(r.a1),945,466,N,'right');
+ T('Zvipo—Zvinoda Kubhadharwa Neungano',80,540,N);L(740,548,950);T(fm(r.a2),945,536,N,'right');
+ [[3,620],[4,690],[5,760]].forEach(([k,y])=>{L(80,y+8,700);T(r['l'+k]||'',90,y-4,N);L(740,y+8,950);T(fm(r['a'+k]),945,y-4,N,'right')});
+ T('MARI YESE:',700,840,'bold 40px "Times New Roman",serif','right');L(740,848,950);T((r.cur||'USD')+' '+fm(r.total),945,836,'bold 34px "Times New Roman",serif','right');
+ const [s1,s2]=await Promise.all([ld(r.s1),ld(r.s2)]);
+ if(s1)x.drawImage(s1,110,845,300,96);if(s2)x.drawImage(s2,600,845,300,96);T(r.name||'',260,962,N,'center');T(r.name2||'',735,962,N,'center');
+ L(60,970,460);L(520,970,950);
+ T('(Ranyorwa na)',260,1005,'22px "Times New Roman",serif','center');T('(Zvapupurirwa na)',735,1005,'22px "Times New Roman",serif','center');
+ T('S-24-CA   5/21',60,1055,'24px "Times New Roman",serif');T('Printed in South Africa  JWSA',950,1055,'24px "Times New Roman",serif','right');
+ return c.toDataURL('image/png')}
+async function showPv(id){const r=load().find(x=>x.id===id);if(!r)return;pvUrl=await paper(r);$('pvimg').src=pvUrl;$('pv').hidden=false;$('pv').scrollIntoView({behavior:'smooth'})}
+let pvUrl='';
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function backup(){dl(new Blob([JSON.stringify({receipts:load()})],{type:'application/json'}),'receipts-backup-'+today()+'.json');say('Backup saved')}
+function restore(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result).receipts,a=load();d.forEach(r=>{if(!a.some(x=>x.id===r.id))a.push(r)});a.sort((p,q)=>q.id-p.id);store(a);render();say('Restored '+d.length+' receipts')}catch(e){say('Invalid backup file')}inp.value=''};rd.readAsText(f)}
+async function shareImg(){if(!pvUrl)return;const b=await (await fetch(pvUrl)).blob();const f=new File([b],'receipt.png',{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f]});else dl(b,'receipt.png')}catch(e){}}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+newR();render();
+</script></body></html>
